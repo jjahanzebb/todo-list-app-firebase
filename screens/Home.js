@@ -6,6 +6,7 @@ import {
   TextInput,
   TouchableOpacity,
   Keyboard,
+  Pressable,
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import { firebase } from "../config";
@@ -76,10 +77,14 @@ const Home = () => {
 
   return (
     <SafeAreaView style={tw`flex-1`}>
-      <View style={tw``}>
+      {/* formContainer */}
+      <View
+        style={tw`flex-col h-24 ml-2 mr-2 mt-24 rounded-xl shadow-lg shadow-neutral-600	`}
+      >
+        {/* input */}
         <TextInput
-          style={tw``}
-          placeholder="Add a New Task todo"
+          style={tw`h-12 rounded-t-xl bg-white px-4 pr-2 text-center text-base overflow-hidden`}
+          placeholder="Enter a new Task to do.."
           placeholderTextColor="#aaaaaa"
           onChangeText={(heading) => setAddData(heading)}
           value={addData}
@@ -87,11 +92,43 @@ const Home = () => {
           autoCapitalize="none"
         />
 
-        <TouchableOpacity style={tw``} onPress={addTodo}>
-          <Text style={tw``}>Add</Text>
+        {/* button */}
+        <TouchableOpacity
+          style={tw`h-12 rounded-b-xl bg-sky-500 px-8 items-center justify-center`}
+          onPress={addTodo}
+        >
+          {/* buttonText */}
+          <Text style={tw`text-white text-lg`}>Add</Text>
         </TouchableOpacity>
 
-        <FlatList />
+        <FlatList
+          data={todos}
+          numColumns={1}
+          renderItem={({ item }) => {
+            <View>
+              {/* container */}
+              <Pressable
+                style={tw`bg-slate-300 p-4 m-1 mx-2.5 flex-row items-center	rounded-2xl`}
+                onPress={() => navigation.navigate("Detail", { item })}
+              >
+                {/* todoIcon */}
+                <FontAwesome
+                  style={tw`mt-1 text-lg ml-3.5`}
+                  name="trash-o"
+                  color="#ff2233"
+                  onPress={() => deleteTodo(item)}
+                />
+                {/* innerContainer */}
+                <View style={tw`items-center flex-row ml-11 `}>
+                  {/* itemHeading */}
+                  <Text style={tw`font-bold text-lg mr-5`}>
+                    {item.heading[0].toUpperCase() + item.heading.slice(1)}
+                  </Text>
+                </View>
+              </Pressable>
+            </View>;
+          }}
+        />
       </View>
     </SafeAreaView>
   );
