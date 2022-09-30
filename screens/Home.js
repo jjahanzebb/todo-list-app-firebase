@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import { firebase } from "../config";
-import { FontAwesome } from "@expo/vector-icons";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import tw from "twrnc";
@@ -76,16 +76,17 @@ const Home = () => {
   };
 
   return (
-    <SafeAreaView style={tw`flex-1`}>
+    <SafeAreaView style={[tw`flex-1`, { backgroundColor: "#F1FCFE" }]}>
       {/* formContainer */}
-      <View
-        style={tw`flex-col h-24 ml-2 mr-2 mt-24 rounded-xl shadow-lg shadow-neutral-600	`}
-      >
+      <View style={tw`flex-row h-12 ml-2 mr-2 mt-24 rounded-xl `}>
         {/* input */}
         <TextInput
-          style={tw`h-12 rounded-t-xl bg-white px-4 pr-2 text-center text-base overflow-hidden`}
+          style={[
+            tw`h-12 rounded-l-xl px-4 pr-2 text-base overflow-hidden flex-1 mr-0.75`,
+            { backgroundColor: "#1D3557", color: "#F1FCFE" },
+          ]}
           placeholder="Enter a new Task to do.."
-          placeholderTextColor="#aaaaaa"
+          placeholderTextColor="#828980"
           onChangeText={(heading) => setAddData(heading)}
           value={addData}
           underlineColorAndroid="transparent"
@@ -94,42 +95,50 @@ const Home = () => {
 
         {/* button */}
         <TouchableOpacity
-          style={tw`h-12 rounded-b-xl bg-sky-500 px-8 items-center justify-center`}
+          style={[
+            tw`h-12 rounded-r-xl px-8 items-center justify-center`,
+            { backgroundColor: "#3890C7" },
+          ]}
           onPress={addTodo}
         >
           {/* buttonText */}
-          <Text style={tw`text-white text-lg`}>Add</Text>
+          <Text style={[tw`text-base`, { color: "#F1FCFE" }]}>Add</Text>
         </TouchableOpacity>
-
-        <FlatList
-          data={todos}
-          numColumns={1}
-          renderItem={({ item }) => {
-            <View>
-              {/* container */}
-              <Pressable
-                style={tw`bg-slate-300 p-4 m-1 mx-2.5 flex-row items-center	rounded-2xl`}
-                onPress={() => navigation.navigate("Detail", { item })}
-              >
-                {/* todoIcon */}
-                <FontAwesome
-                  style={tw`mt-1 text-lg ml-3.5`}
-                  name="trash-o"
-                  color="#ff2233"
-                  onPress={() => deleteTodo(item)}
-                />
-                {/* innerContainer */}
-                <View style={tw`items-center flex-row ml-11 `}>
-                  {/* itemHeading */}
-                  <Text style={tw`font-bold text-lg mr-5`}>
-                    {item.heading[0].toUpperCase() + item.heading.slice(1)}
-                  </Text>
-                </View>
-              </Pressable>
-            </View>;
-          }}
-        />
       </View>
+
+      <FlatList
+        style={tw`mt-4`}
+        data={todos}
+        keyExtractor={(item) => item.id}
+        numColumns={1}
+        renderItem={({ item }) => (
+          <View>
+            {/* container */}
+            <TouchableOpacity
+              style={[
+                tw`h-12 px-4 mt-2 mx-2 flex-row items-center rounded-xl`,
+                { backgroundColor: "#1D3557" },
+              ]}
+              onPress={() => navigation.navigate("Details", { item })}
+            >
+              {/* innerContainer */}
+              <View style={tw`items-center flex-row ml-3 flex-1`}>
+                {/* itemHeading */}
+                <Text style={[tw`text-lg mr-5`, { color: "#F1FCFE" }]}>
+                  {item.heading[0].toUpperCase() + item.heading.slice(1)}
+                </Text>
+              </View>
+              {/* todoIcon */}
+              <MaterialCommunityIcons
+                style={tw`text-2xl mr-3 p-2 rounded-full`}
+                name="delete-outline"
+                color="#E63946"
+                onPress={() => deleteTodo(item)}
+              />
+            </TouchableOpacity>
+          </View>
+        )}
+      />
     </SafeAreaView>
   );
 };
