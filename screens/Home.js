@@ -27,36 +27,6 @@ const Home = () => {
   const [addData, setAddData] = useState("");
   const navigation = useNavigation();
 
-  const [isChecked, setChecked] = useState([]);
-
-  const handleChecked = (item) => {
-    // if (isChecked.indexOf(item.id) >= 0) {
-    //   isChecked.splice(isChecked.indexOf(item.id), 1);
-    // } else {
-    //   isChecked.push(item.id);
-    // }
-    // console.log(isChecked);
-
-    todoRef
-      .doc(item.id)
-      .update({
-        completed: !item.completed,
-      })
-      .then(() => {
-        console.log("Status Updated!");
-      })
-      .catch((error) => {
-        alert(error.message);
-      });
-  };
-
-  const generateColor = () => {
-    const randomColor = Math.floor(Math.random() * 16777215)
-      .toString(16)
-      .padStart(6, "0");
-    return `#${randomColor}`;
-  };
-
   // fetch/read todo from firebase database
   useEffect(() => {
     todoRef.orderBy("createdAt", "desc").onSnapshot((querySnapshot) => {
@@ -115,6 +85,29 @@ const Home = () => {
           alert(error);
         });
     }
+  };
+
+  // updates to-do if it is completed or not in database
+  const handleChecked = (item) => {
+    todoRef
+      .doc(item.id)
+      .update({
+        completed: !item.completed,
+      })
+      .then(() => {
+        console.log("Status Updated!");
+      })
+      .catch((error) => {
+        alert(error.message);
+      });
+  };
+
+  // generates random color to store with to-do
+  const generateColor = () => {
+    const randomColor = Math.floor(Math.random() * 16777215)
+      .toString(16)
+      .padStart(6, "0");
+    return `#${randomColor}`;
   };
 
   return (
