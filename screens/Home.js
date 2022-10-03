@@ -27,36 +27,6 @@ const Home = () => {
   const [addData, setAddData] = useState("");
   const navigation = useNavigation();
 
-  const [isChecked, setChecked] = useState([]);
-
-  const handleChecked = (item) => {
-    // if (isChecked.indexOf(item.id) >= 0) {
-    //   isChecked.splice(isChecked.indexOf(item.id), 1);
-    // } else {
-    //   isChecked.push(item.id);
-    // }
-    // console.log(isChecked);
-
-    todoRef
-      .doc(item.id)
-      .update({
-        completed: !item.completed,
-      })
-      .then(() => {
-        console.log("Status Updated!");
-      })
-      .catch((error) => {
-        alert(error.message);
-      });
-  };
-
-  const generateColor = () => {
-    const randomColor = Math.floor(Math.random() * 16777215)
-      .toString(16)
-      .padStart(6, "0");
-    return `#${randomColor}`;
-  };
-
   // fetch/read todo from firebase database
   useEffect(() => {
     todoRef.orderBy("createdAt", "desc").onSnapshot((querySnapshot) => {
@@ -77,9 +47,9 @@ const Home = () => {
   }, []);
 
   // delete/remove todo from firebase database
-  const deleteTodo = (todos) => {
+  const deleteTodo = (item) => {
     todoRef
-      .doc(todos.id)
+      .doc(item.id)
       .delete()
       .then(() => {
         // if deleted
@@ -117,6 +87,29 @@ const Home = () => {
     }
   };
 
+  // updates to-do if it is completed or not in database
+  const handleChecked = (item) => {
+    todoRef
+      .doc(item.id)
+      .update({
+        completed: !item.completed,
+      })
+      .then(() => {
+        console.log("Status Updated!");
+      })
+      .catch((error) => {
+        alert(error.message);
+      });
+  };
+
+  // generates random color to store with to-do
+  const generateColor = () => {
+    const randomColor = Math.floor(Math.random() * 16777215)
+      .toString(16)
+      .padStart(6, "0");
+    return `#${randomColor}`;
+  };
+
   return (
     <SafeAreaView style={[tw`flex-1`, { backgroundColor: "#1D3557" }]}>
       <StatusBar barStyle={"light-content"} backgroundColor={"#1D3557"} />
@@ -125,25 +118,39 @@ const Home = () => {
       <View
         style={[tw`flex-1 rounded-tl-full`, { backgroundColor: "#F1FCFE" }]}
       >
-        {/* Logo */}
-        <View style={[tw`justify-start flex-row mt-8 mx-4 rounded-lg`]}>
-          <Text
-            style={[
-              tw`text-2xl font-800 rounded-l-lg pl-2 pr-1.5 py-0.5`,
-              { color: "#3890C7", backgroundColor: "#F1FCFE" },
-            ]}
-          >
-            My
-          </Text>
+        {/* Top Bar */}
+        <View style={[tw`justify-between flex-row mt-8 mx-4 rounded-lg`]}>
+          <View>
+            <Text
+              style={[
+                tw`text-2xl font-semibold rounded-l-lg pl-2 pr-1.2 py-0.5`,
+                { color: "#F1FCFE" },
+              ]}
+            >
+              Home
+            </Text>
+          </View>
 
-          <Text
-            style={[
-              tw`text-2xl font-800 rounded-r-lg pr-2 pl-1.5 py-0.5`,
-              { color: "#F1FCFE", backgroundColor: "#3890C7" },
-            ]}
-          >
-            to-dos
-          </Text>
+          {/* Logo */}
+          <View style={[tw`flex-row`]}>
+            <Text
+              style={[
+                tw`text-2xl font-800 rounded-l-lg pl-2 pr-1.2 py-0.5`,
+                { color: "#3890C7", backgroundColor: "transparent" },
+              ]}
+            >
+              My
+            </Text>
+
+            <Text
+              style={[
+                tw`text-2xl font-800 rounded-lg px-2 py-0.5`,
+                { color: "#F1FCFE", backgroundColor: "#3890C7", elevation: 2 },
+              ]}
+            >
+              to-dos
+            </Text>
+          </View>
         </View>
 
         {/* formContainer */}
