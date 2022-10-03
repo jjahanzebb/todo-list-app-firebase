@@ -47,9 +47,9 @@ const Home = () => {
   }, []);
 
   // delete/remove todo from firebase database
-  const deleteTodo = (todos) => {
+  const deleteTodo = (item) => {
     todoRef
-      .doc(todos.id)
+      .doc(item.id)
       .delete()
       .then(() => {
         // if deleted
@@ -118,25 +118,39 @@ const Home = () => {
       <View
         style={[tw`flex-1 rounded-tl-full`, { backgroundColor: "#F1FCFE" }]}
       >
-        {/* Logo */}
-        <View style={[tw`justify-start flex-row mt-8 mx-4 rounded-lg`]}>
-          <Text
-            style={[
-              tw`text-2xl font-800 rounded-l-lg pl-2 pr-1.5 py-0.5`,
-              { color: "#3890C7", backgroundColor: "#F1FCFE" },
-            ]}
-          >
-            My
-          </Text>
+        {/* Top Bar */}
+        <View style={[tw`justify-between flex-row mt-8 mx-4 rounded-lg`]}>
+          <View>
+            <Text
+              style={[
+                tw`text-2xl font-semibold rounded-l-lg pl-2 pr-1.2 py-0.5`,
+                { color: "#F1FCFE" },
+              ]}
+            >
+              Home
+            </Text>
+          </View>
 
-          <Text
-            style={[
-              tw`text-2xl font-800 rounded-r-lg pr-2 pl-1.5 py-0.5`,
-              { color: "#F1FCFE", backgroundColor: "#3890C7" },
-            ]}
-          >
-            to-dos
-          </Text>
+          {/* Logo */}
+          <View style={[tw`flex-row`]}>
+            <Text
+              style={[
+                tw`text-2xl font-800 rounded-l-lg pl-2 pr-1.2 py-0.5`,
+                { color: "#3890C7", backgroundColor: "transparent" },
+              ]}
+            >
+              My
+            </Text>
+
+            <Text
+              style={[
+                tw`text-2xl font-800 rounded-lg px-2 py-0.5`,
+                { color: "#F1FCFE", backgroundColor: "#3890C7", elevation: 2 },
+              ]}
+            >
+              to-dos
+            </Text>
+          </View>
         </View>
 
         {/* formContainer */}
