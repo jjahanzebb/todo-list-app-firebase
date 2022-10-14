@@ -18,3 +18,4 @@
 ### ⚫ Details Screen
 <img src="https://user-images.githubusercontent.com/93594492/193753245-adfdd20b-a0f8-4144-9d9b-65cc9b24c6a1.png" width="40%"/>
 
+
