@@ -1,4 +1,5 @@
 import {
+  Alert,
   Pressable,
   StatusBar,
   StyleSheet,
@@ -6,7 +7,7 @@ import {
   TextInput,
   View,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { firebase } from "../config";
 import { useNavigation } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -14,10 +15,79 @@ import tw from "twrnc";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { Entypo, Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 
-const Login = ({}) => {
-  const todoRef = firebase.firestore().collection("todos");
+import * as SQLite from "expo-sqlite";
 
+// Defining Database in const
+const db = SQLite.openDatabase(
+  {
+    name: "MainDB",
+    location: "default",
+  },
+  () => {},
+  (error) => {
+    console.log("ERROR: " + error);
+  }
+);
+
+const Login = () => {
   const navigation = useNavigation();
+
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+
+  useEffect(() => {
+    createTable();
+    getData();
+  }, []);
+
+  // Creatng table in Database
+  const createTable = () => {
+    db.transaction((tx) => {
+      tx.executeSql(
+        "CREATE TABLE IF NOT EXISTS Users (uid INTEGER PRIMARY KEY AUTOINCREMENT, Username TEXT, Password TEXT);"
+      );
+    });
+  };
+
+  // Insert into Table of Database
+  const setData = async () => {
+    if (username.length == 0 || password.length == 0) {
+      Alert.alert("Wrong Credentials!", "Please enter Username and Password");
+    } else {
+      try {
+        await db.transaction(async (tx) => {
+          await tx.executeSql(
+            "INSERT INTO Users (Username, Age) VALUES ('" +
+              username +
+              "','" +
+              password +
+              ")"
+          );
+        });
+        navigation.navigate("Home");
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  };
+
+  // Fetch data from Database and login if data is saved already
+  const getData = () => {
+    try {
+      db.transaction((tx) => {
+        tx.executeSql("SELECT Username, Password FROM Users"),
+          [],
+          (tx, results) => {
+            var rows = results.rows.length;
+            if (rows > 0) {
+              navigation.navigate("Home");
+            }
+          };
+      });
+    } catch (error) {
+      console.log("FETCH ERROR => ", error);
+    }
+  };
 
   return (
     <SafeAreaView style={[tw`flex-1`, { backgroundColor: "#1D3557" }]}>
@@ -70,8 +140,8 @@ const Login = ({}) => {
               { backgroundColor: "#F1FCFE", color: "#1D3557", elevation: 5 },
             ]}
             placeholderTextColor="#888899"
-            onChangeText={""}
-            value={""}
+            onChangeText={(text) => setUsername(text)}
+            value={username}
             placeholder="Enter Username.."
             underlineColorAndroid="transparent"
             autoCapitalize="none"
@@ -91,8 +161,8 @@ const Login = ({}) => {
               { backgroundColor: "#F1FCFE", color: "#1D3557", elevation: 5 },
             ]}
             placeholderTextColor="#888899"
-            onChangeText={""}
-            value={""}
+            onChangeText={(text) => setPassword(text)}
+            value={password}
             placeholder="Enter Password.."
             underlineColorAndroid="transparent"
             autoCapitalize="none"
@@ -104,9 +174,7 @@ const Login = ({}) => {
               tw`h-12 rounded-xl pr-4 mt-4 items-center justify-center flex-row`,
               { backgroundColor: "#6ab934", elevation: 10 },
             ]}
-            onPress={() => {
-              "";
-            }}
+            onPress={setData}
             activeOpacity={0.5}
           >
             <MaterialCommunityIcons

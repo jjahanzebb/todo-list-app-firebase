@@ -21,14 +21,33 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import tw from "twrnc";
 import Checkbox from "expo-checkbox";
 
+import * as SQLite from "expo-sqlite";
+
+// Defining Database in const
+const db = SQLite.openDatabase(
+  {
+    name: "MainDB",
+    location: "default",
+  },
+  () => {},
+  (error) => {
+    console.log("ERROR: " + error);
+  }
+);
+
 const Home = () => {
   const [todos, setTodos] = useState([]);
   const todoRef = firebase.firestore().collection("todos");
   const [addData, setAddData] = useState("");
   const navigation = useNavigation();
 
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+
   // fetch/read todo from firebase database
   useEffect(() => {
+    getData();
+
     todoRef.orderBy("createdAt", "desc").onSnapshot((querySnapshot) => {
       const todos = [];
       querySnapshot.forEach((doc) => {
@@ -110,6 +129,28 @@ const Home = () => {
     return `#${randomColor}`;
   };
 
+  // Fetch data from Database
+  const getData = async () => {
+    try {
+      console.log("1 => 1");
+      await db.transaction((tx) => {
+        tx.executeSql("SELECT Username, Password FROM Users"),
+          [],
+          (tx, results) => {
+            var rows = results.rows.length;
+            console.log(rows);
+            if (rows > 0) {
+              var uname = results.rows.item(0).Username;
+              setUsername(uname);
+              setPassword(results.rows.item(0).Password);
+            }
+          };
+      });
+    } catch (error) {
+      console.log("FETCH ERROR => ", error);
+    }
+  };
+
   return (
     <SafeAreaView style={[tw`flex-1`, { backgroundColor: "#1D3557" }]}>
       <StatusBar barStyle={"light-content"} backgroundColor={"#1D3557"} />
@@ -151,6 +192,14 @@ const Home = () => {
               to-dos
             </Text>
           </View>
+        </View>
+        <View>
+          <Text
+            style={[tw`text-base font-semibold pl-6`, { color: "#F1FCFE" }]}
+          >
+            Welcome,
+            {"\n" + username}
+          </Text>
         </View>
 
         {/* formContainer */}
