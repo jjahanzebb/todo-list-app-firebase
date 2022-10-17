@@ -19,13 +19,10 @@ import * as SQLite from "expo-sqlite";
 
 // Defining Database in const
 const db = SQLite.openDatabase(
-  {
-    name: "MainDB",
-    location: "default",
-  },
+  { name: "MainDB1", location: "default" },
   () => {},
   (error) => {
-    console.log("ERROR: " + error);
+    console.log("DB ERROR => ", error);
   }
 );
 
@@ -42,9 +39,11 @@ const Login = () => {
 
   // Creatng table in Database
   const createTable = () => {
+    console.log("db ==>", db);
     db.transaction((tx) => {
       tx.executeSql(
-        "CREATE TABLE IF NOT EXISTS Users (uid INTEGER PRIMARY KEY AUTOINCREMENT, Username TEXT, Password TEXT);"
+        "CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, u_name TEXT, u_pass TEXT);",
+        []
       );
     });
   };
@@ -57,11 +56,22 @@ const Login = () => {
       try {
         await db.transaction(async (tx) => {
           await tx.executeSql(
-            "INSERT INTO Users (Username, Age) VALUES ('" +
-              username +
-              "','" +
-              password +
-              ")"
+            "INSERT INTO users (u_name, u_pass) VALUES (?,?)",
+            ["gibberish", "12345"]
+          );
+          console.log("ssssssssssssssssssssssss");
+
+          await tx.executeSql(
+            "SELECT u_name, u_pass FROM users",
+            [results],
+            (tx, results) => {
+              var rows = results.rows.length;
+              console.log("ROWS => ", results);
+              if (rows > 0) {
+                setUsername(results.rows.item(0).Username);
+                setPassword(results.rows.item(0).Password);
+              }
+            }
           );
         });
         navigation.navigate("Home");
@@ -75,14 +85,12 @@ const Login = () => {
   const getData = () => {
     try {
       db.transaction((tx) => {
-        tx.executeSql("SELECT Username, Password FROM Users"),
-          [],
-          (tx, results) => {
-            var rows = results.rows.length;
-            if (rows > 0) {
-              navigation.navigate("Home");
-            }
-          };
+        tx.executeSql("SELECT * FROM users", [], (tx, results) => {
+          var rows = results.rows.length;
+          if (rows > 0) {
+            navigation.navigate("Home");
+          }
+        });
       });
     } catch (error) {
       console.log("FETCH ERROR => ", error);

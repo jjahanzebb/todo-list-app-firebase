@@ -15,6 +15,7 @@ import {
   Entypo,
   MaterialCommunityIcons,
   FontAwesome5,
+  SimpleLineIcons,
 } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -24,16 +25,7 @@ import Checkbox from "expo-checkbox";
 import * as SQLite from "expo-sqlite";
 
 // Defining Database in const
-const db = SQLite.openDatabase(
-  {
-    name: "MainDB",
-    location: "default",
-  },
-  () => {},
-  (error) => {
-    console.log("ERROR: " + error);
-  }
-);
+const db = SQLite.openDatabase("MainDB");
 
 const Home = () => {
   const [todos, setTodos] = useState([]);
@@ -130,21 +122,20 @@ const Home = () => {
   };
 
   // Fetch data from Database
-  const getData = async () => {
+  const getData = () => {
     try {
-      console.log("1 => 1");
-      await db.transaction((tx) => {
-        tx.executeSql("SELECT Username, Password FROM Users"),
+      db.transaction((tx) => {
+        tx.executeSql(
+          "SELECT Username, Password FROM Users",
           [],
           (tx, results) => {
             var rows = results.rows.length;
-            console.log(rows);
             if (rows > 0) {
-              var uname = results.rows.item(0).Username;
-              setUsername(uname);
+              setUsername(results.rows.item(0).Username);
               setPassword(results.rows.item(0).Password);
             }
-          };
+          }
+        );
       });
     } catch (error) {
       console.log("FETCH ERROR => ", error);
@@ -161,7 +152,21 @@ const Home = () => {
       >
         {/* Top Bar */}
         <View style={[tw`justify-between flex-row mt-8 mx-4 rounded-lg`]}>
-          <View>
+          <View style={tw`flex-row items-center`}>
+            {/* back button */}
+            <TouchableOpacity
+              onPress={() => {
+                navigation.navigate("Login");
+              }}
+              activeOpacity={0.5}
+            >
+              <SimpleLineIcons
+                style={[tw`text-xl -ml-0.5 mt-0.25 px-2 rounded-full`, {}]}
+                name="logout"
+                color="#F1FCFE"
+              />
+            </TouchableOpacity>
+
             <Text
               style={[
                 tw`text-2xl font-semibold rounded-l-lg pl-2 pr-1.2 py-0.5`,
